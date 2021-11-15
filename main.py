@@ -36,7 +36,8 @@ def send_message_only(data, msg):
     config['lock'].acquire()
 
     send_data = {"chat_id":data["message"]["chat"]["id"], 
-                "text":str(msg)
+                "text":str(msg),
+                "parse_mode":"Markdown"
     }
 
     #print(send_data)
@@ -131,11 +132,15 @@ while True:
             
             if new_msg == "⛏ Your Mining Statistics":
                 mining_data = get_data(wallet)
-                send_message_only(data,f''' Pending Balance: {mining_data["stats"]["balance"]}
-Last Block Reward: {mining_data["stats"]["last_reward"]}
-Last Share Submitted: {datetime.fromtimestamp(int(mining_data["stats"]["lastShare"])).strftime("%m-%d-%y %H:%M:%S")}
-Total Hashes Submitted: {mining_data["stats"]["hashes"]} 
-Hash Rate: {mining_data["stats"]["hashrate"]}/sec ''')
+                send_message_only(data,
+                                  "*BALANCE*\n"
+                                  f'🏦 Pending Balance: {mining_data["stats"]["balance"]}\n'
+                                  f'💳 Last Block Reward: {mining_data["stats"]["last_reward"]}\n'
+                                  '\n*PERFORMANCE*\n'
+                                  f'🕘 Last Share Submitted: {datetime.fromtimestamp(int(mining_data["stats"]["lastShare"])).strftime("%m/%d/%y %H:%M")}\n'
+                                  f'📤 Total Hashes Submitted: {mining_data["stats"]["hashes"]}\n'
+                                  #f'⏱ Hash Rate: {mining_data["stats"]["hashrate"]}/sec'
+                                  )
             if new_msg == "🤖 Your Workers / Rigs":
                 send_message_only(data,"Coming Soon")
                 

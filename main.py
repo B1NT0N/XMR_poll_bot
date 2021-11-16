@@ -16,9 +16,10 @@ def get_data(wallet):
     params = {"address": f"{wallet}",
             "longpoll": "false"
             }
-
     response = requests.get(url,params)
+    
     data = response.json()
+    
     return data
 
 token = os.getenv('BOT_TOKEN')
@@ -35,39 +36,14 @@ def del_updates(data):
 def send_message_only(data, msg):
     config['lock'].acquire()
 
-    send_data = {"chat_id":data["message"]["chat"]["id"], 
+    send_data = {"chat_id":data["message"]["chat"]["id"],
                 "text":str(msg),
                 "parse_mode":"Markdown"
     }
 
-    #print(send_data)
     requests.post(f"{config['url']}/sendMessage",send_data)
     config['lock'].release()
 
-def send_inkeyboard_message(data,msg,link):
-    config['lock'].acquire()
-
-    in_keyboard={
-        "inline_keyboard":[
-                            [
-                                {"text": f"🌐 Watch {msg} Now 🌐",
-                                "url":link
-                                }
-                            ]
-                        ],
-    }
-
-    in_keyboard = json.dumps(in_keyboard)
-
-    send_data = {"chat_id":data["message"]["chat"]["id"], 
-                "text":"🔰 Download Link Bellow 🔰",
-                "reply_markup":in_keyboard
-    }
-
-    #print(send_data)
-    requests.post(f"{config['url']}/sendMessage",send_data)
-    config['lock'].release()
-    
 def send_keyboard_message(data,msg):
     config['lock'].acquire()
 
@@ -119,7 +95,7 @@ while True:
                 
             if new_msg == "/start":
                 send_message_only(data, "Welcome")
-                send_message_only(data, "Use /config to configure the bot")
+                send_message_only(data, "Please use /config to configure the bot")
             if new_msg == "/config":
                 send_message_only(data,"Please send me your XMR Address")
                 
@@ -134,12 +110,12 @@ while True:
                 mining_data = get_data(wallet)
                 send_message_only(data,
                                   "*BALANCE*\n"
-                                  f'🏦 Pending Balance: {mining_data["stats"]["balance"]}\n'
-                                  f'💳 Last Block Reward: {mining_data["stats"]["last_reward"]}\n'
+                                  f'🏦 Pending Balance: {str(float(mining_data["stats"]["balance"])/10**12) if "balance" in mining_data["stats"] else "0.000000000000"}\n'
+                                  f'💳 Last Block Reward: {str(float(mining_data["stats"]["last_reward"])/10**12) if "last_reward" in mining_data["stats"] else "0.000000000000"}\n'
                                   '\n*PERFORMANCE*\n'
-                                  f'🕘 Last Share Submitted: {datetime.fromtimestamp(int(mining_data["stats"]["lastShare"])).strftime("%m/%d/%y %H:%M")}\n'
-                                  f'📤 Total Hashes Submitted: {mining_data["stats"]["hashes"]}\n'
-                                  #f'⏱ Hash Rate: {mining_data["stats"]["hashrate"]}/sec'
+                                  f'🕘 Last Share Submitted: {datetime.fromtimestamp(int(mining_data["stats"]["lastShare"])).strftime("%H:%M") if "lastShare" in mining_data["stats"] else "Never"}\n'
+                                  f'📤 Total Hashes Submitted: {mining_data["stats"]["hashes"] if "hashes" in mining_data["stats"] else "0"}\n'
+                                  f'⏱ Hash Rate: {mining_data["stats"]["hashrate"] if "hashrate" in mining_data["stats"] else "0 H"}/sec'
                                   )
             if new_msg == "🤖 Your Workers / Rigs":
                 send_message_only(data,"Coming Soon")

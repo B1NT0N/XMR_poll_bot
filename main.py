@@ -19,7 +19,7 @@ def get_data(wallet):
     response = requests.get(url,params)
     
     data = response.json()
-    
+    print(data)
     return data
 
 token = os.getenv('BOT_TOKEN')
@@ -110,16 +110,26 @@ while True:
                 mining_data = get_data(wallet)
                 send_message_only(data,
                                   "*BALANCE*\n"
-                                  f'🏦 Pending Balance: {str(float(mining_data["stats"]["balance"])/10**12) if "balance" in mining_data["stats"] == True else "0.000000000000"}\n'
-                                  f'💳 Last Block Reward: {str(float(mining_data["stats"]["last_reward"])/10**12) if "last_reward" in mining_data["stats"] == True else "0.000000000000"}\n'
-                                  f'💵 Total Paid: {str(float(mining_data["stats"]["total_paid"])/10**12) if "last_reward" in mining_data["stats"] == True else "0.000000000000"}\n'
+                                  f'🏦 Pending Balance: {str(float(mining_data["stats"]["balance"])/10**12) if ("balance" in mining_data["stats"]) is True else "0.000000000000"}\n'
+                                  f'💳 Last Block Reward: {str(float(mining_data["stats"]["last_reward"])/10**12) if ("last_reward" in mining_data["stats"]) is True else "0.000000000000"}\n'
+                                  f'💵 Total Paid: {str(float(mining_data["stats"]["total_paid"])/10**12) if "last_reward" in mining_data["stats"] is True else "0.000000000000"}\n'
                                   '\n*PERFORMANCE*\n'
-                                  f'🕘 Last Share Submitted: {datetime.fromtimestamp(int(mining_data["stats"]["lastShare"])).strftime("%H:%M") if "lastShare" in mining_data["stats"] == True else "Never"}\n'
-                                  f'📤 Total Hashes Submitted: {mining_data["stats"]["hashes"] if "hashes" in mining_data["stats"] == True else "0"}\n'
-                                  f'⏱ Hash Rate: {mining_data["stats"]["hashrate"] if "hashrate" in mining_data["stats"] == True else "0 H"}/sec'
+                                  f'🕘 Last Share Submitted: {datetime.fromtimestamp(int(mining_data["stats"]["lastShare"])).strftime("%H:%M") if ("lastShare" in mining_data["stats"]) is True else "Never"}\n'
+                                  f'📤 Total Hashes Submitted: {mining_data["stats"]["hashes"] if ("hashes" in mining_data["stats"]) is True else "0"}\n'
+                                  f'⏱ Hash Rate: {mining_data["stats"]["hashrate"] if ("hashrate" in mining_data["stats"]) is True else "0 H"}/sec'
                                   )
             if new_msg == "🤖 Your Workers / Rigs":
                 send_message_only(data,"Coming Soon")
+                mining_data = get_data(wallet)
+                for worker in mining_data["perWorkerStats"]:
+                    # send_message_only(data,
+                    #               f'🗝 Worker / Rig ID: *{worker["perWorkerStats"]["workerId"]}*\n'
+                    #               f'⏱ Hash Rate: {worker["perWorkerStats"]["hashrate"] if "hashrate" in mining_data["stats"] == True else "0 H"}/sec\n'
+                    #               f'📤 Accepted Hashes: {worker["perWorkerStats"]["hashes"] if "hashes" in mining_data["stats"] == True else "0"}\n'
+                    #               f'🕘 Last Share: {datetime.fromtimestamp(int(worker["perWorkerStats"]["lastShare"])).strftime("%H:%M") if "lastShare" in mining_data["stats"] == True else "Never"}\n'
+                                  
+                                  
+                    #               )
                 
             old_msg = new_msg 
             # msg=f'{data["message"]["text"]} from: BOT'

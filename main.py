@@ -110,12 +110,13 @@ while True:
                 mining_data = get_data(wallet)
                 send_message_only(data,
                                   "*BALANCE*\n"
-                                  f'🏦 Pending Balance: {str(float(mining_data["stats"]["balance"])/10**12) if "balance" in mining_data["stats"] else "0.000000000000"}\n'
-                                  f'💳 Last Block Reward: {str(float(mining_data["stats"]["last_reward"])/10**12) if "last_reward" in mining_data["stats"] else "0.000000000000"}\n'
+                                  f'🏦 Pending Balance: {str(float(mining_data["stats"]["balance"])/10**12) if "balance" in mining_data["stats"] == True else "0.000000000000"}\n'
+                                  f'💳 Last Block Reward: {str(float(mining_data["stats"]["last_reward"])/10**12) if "last_reward" in mining_data["stats"] == True else "0.000000000000"}\n'
+                                  f'💵 Total Paid: {str(float(mining_data["stats"]["total_paid"])/10**12) if "last_reward" in mining_data["stats"] == True else "0.000000000000"}\n'
                                   '\n*PERFORMANCE*\n'
-                                  f'🕘 Last Share Submitted: {datetime.fromtimestamp(int(mining_data["stats"]["lastShare"])).strftime("%H:%M") if "lastShare" in mining_data["stats"] else "Never"}\n'
-                                  f'📤 Total Hashes Submitted: {mining_data["stats"]["hashes"] if "hashes" in mining_data["stats"] else "0"}\n'
-                                  f'⏱ Hash Rate: {mining_data["stats"]["hashrate"] if "hashrate" in mining_data["stats"] else "0 H"}/sec'
+                                  f'🕘 Last Share Submitted: {datetime.fromtimestamp(int(mining_data["stats"]["lastShare"])).strftime("%H:%M") if "lastShare" in mining_data["stats"] == True else "Never"}\n'
+                                  f'📤 Total Hashes Submitted: {mining_data["stats"]["hashes"] if "hashes" in mining_data["stats"] == True else "0"}\n'
+                                  f'⏱ Hash Rate: {mining_data["stats"]["hashrate"] if "hashrate" in mining_data["stats"] == True else "0 H"}/sec'
                                   )
             if new_msg == "🤖 Your Workers / Rigs":
                 send_message_only(data,"Coming Soon")

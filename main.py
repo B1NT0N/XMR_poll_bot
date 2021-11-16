@@ -121,7 +121,8 @@ while True:
             if new_msg == "🤖 Your Workers / Rigs":
                 send_message_only(data,"Coming Soon")
                 mining_data = get_data(wallet)
-                for worker in mining_data["perWorkerStats"]:
+                #for worker in mining_data["perWorkerStats"]:
+                    
                     # send_message_only(data,
                     #               f'🗝 Worker / Rig ID: *{worker["perWorkerStats"]["workerId"]}*\n'
                     #               f'⏱ Hash Rate: {worker["perWorkerStats"]["hashrate"] if "hashrate" in mining_data["stats"] == True else "0 H"}/sec\n'

@@ -13,7 +13,7 @@ new_msg = ''
 load_dotenv('.env')
 
 #XMR Pool Variables Config
-wallet = ''
+wallet = None
 url = "https://web.xmrpool.eu:8119/stats_address"
 
 #Telegram Bot Config
@@ -115,16 +115,16 @@ while True:
                 
             #/DONATE COMMAND    
             if new_msg == "/donate":
-                send_message_only(data,"XMR Waller Address: `47hMEVicDHdTGwcyTiQair3ong6v1yQAUQKLCdbYt41sXnA3mCaDBfNjgWMF9GdF24XR1b97VBNgMZ64UxB5iTrUHAnAPKe`")
+                send_message_only(data,"XMR Wallet Address: `47hMEVicDHdTGwcyTiQair3ong6v1yQAUQKLCdbYt41sXnA3mCaDBfNjgWMF9GdF24XR1b97VBNgMZ64UxB5iTrUHAnAPKe`")
             
             #/HELP COMMAND    
             if new_msg == "/help":
                 send_message_only(data,
                                   "*HELP*\n"
-                                  "Use /config to *CONFIGURE* the bot\n"
-                                  "Use /help for *HELP*\n"
-                                  "Use /donate *GIVE CREDITS* to the creator\n"
-                                  "Use /contact to inform on *BUGS* or *FEATURES*\n"
+                                  "/config - *CONFIGURE* the bot\n"
+                                  "/help - *HELP*\n"
+                                  "/donate - *GIVE CREDITS* to the creator\n"
+                                  "/contact - inform on *BUGS* or *FEATURES*\n"
                                   )
                 
             #Check if Configuration is Valid    
@@ -135,30 +135,39 @@ while True:
                 send_message_only(data,"❌ Invalid Address")
                 send_message_only(data, "Please Use /config to configure the bot")
             
+            #if wallet is not None:
             #Send Mining Statistics Information
-            if new_msg == "⛏ Your Mining Statistics":
+            if new_msg == "⛏ Your Mining Statistics" and wallet is not None:
                 mining_data = get_data(wallet)
                 send_message_only(data,
-                                  "*BALANCE*\n"
-                                  f'🏦 Pending Balance: {str(float(mining_data["stats"]["balance"])/10**12) if ("balance" in mining_data["stats"]) is True else "0.000000000000"}\n'
-                                  f'💳 Last Block Reward: {str(float(mining_data["stats"]["last_reward"])/10**12) if ("last_reward" in mining_data["stats"]) is True else "0.000000000000"}\n'
-                                  f'💵 Total Paid: {str(float(mining_data["stats"]["total_paid"])/10**12) if "last_reward" in mining_data["stats"] is True else "0.000000000000"}\n'
-                                  '\n*PERFORMANCE*\n'
-                                  f'🕘 Last Share Submitted: {datetime.fromtimestamp(int(mining_data["stats"]["lastShare"])).strftime("%H:%M") if ("lastShare" in mining_data["stats"]) is True else "Never"}\n'
-                                  f'📤 Total Hashes Submitted: {mining_data["stats"]["hashes"] if ("hashes" in mining_data["stats"]) is True else "0"}\n'
-                                  f'⏱ Hash Rate: {mining_data["stats"]["hashrate"] if ("hashrate" in mining_data["stats"]) is True else "0 H"}/sec'
-                                  )
+                                "*BALANCE*\n"
+                                f'🏦 Pending Balance: {str(float(mining_data["stats"]["balance"])/10**12) if ("balance" in mining_data["stats"]) is True else "0.000000000000"}\n'
+                                f'💳 Last Block Reward: {str(float(mining_data["stats"]["last_reward"])/10**12) if ("last_reward" in mining_data["stats"]) is True else "0.000000000000"}\n'
+                                f'💵 Total Paid: {str(float(mining_data["stats"]["total_paid"])/10**12) if "last_reward" in mining_data["stats"] is True else "0.000000000000"}\n'
+                                '\n*PERFORMANCE*\n'
+                                f'🕘 Last Share Submitted: {datetime.fromtimestamp(int(mining_data["stats"]["lastShare"])).strftime("%H:%M") if ("lastShare" in mining_data["stats"]) is True else "Never"}\n'
+                                f'📤 Total Hashes Submitted: {mining_data["stats"]["hashes"] if ("hashes" in mining_data["stats"]) is True else "0"}\n'
+                                f'⏱ Hash Rate: {mining_data["stats"]["hashrate"] if ("hashrate" in mining_data["stats"]) is True else "0 H"}/sec'
+                                )
+            elif new_msg == "⛏ Your Mining Statistics" and wallet is None:
+                send_message_only(data,"Oops! Something happened and I can't remember your XMR Wallet Address")
+                send_message_only(data, "Please Use /config to reconfigure the bot")
+                
             
             #Send Your Workers / Rigs Information    
-            if new_msg == "🤖 Your Workers / Rigs":
+            if new_msg == "🤖 Your Workers / Rigs" and wallet is not None:
                 mining_data = get_data(wallet)
                 for worker in mining_data["perWorkerStats"]:
                     send_message_only(data,
-                                  f'*PER WORKER STATS*\n'
-                                  f'\n🗝 Worker / Rig ID: *{worker["workerId"]}*\n'
-                                  f'⏱ Hash Rate: {worker["hashrate"] if ("hashrate" in worker) is True else "0 H"}/sec\n'
-                                  f'📤 Accepted Hashes: {worker["hashes"] if ("hashes" in worker) is True else "0"}\n'
-                                  f'🕘 Last Share: {datetime.fromtimestamp(int(worker["lastShare"])).strftime("%H:%M") if ("lastShare" in worker) is True else "Never"}\n'
-                                  )
+                                f'*PER WORKER STATS*\n'
+                                f'\n🗝 Worker / Rig ID: *{worker["workerId"]}*\n'
+                                f'⏱ Hash Rate: {worker["hashrate"] if ("hashrate" in worker) is True else "0 H"}/sec\n'
+                                f'📤 Accepted Hashes: {worker["hashes"] if ("hashes" in worker) is True else "0"}\n'
+                                f'🕘 Last Share: {datetime.fromtimestamp(int(worker["lastShare"])).strftime("%H:%M") if ("lastShare" in worker) is True else "Never"}\n'
+                                )
+            elif new_msg == "🤖 Your Workers / Rigs" and wallet is None:
+                send_message_only(data,"Oops! Something happened and I can't remember your XMR Wallet Address")
+                send_message_only(data, "Please Use /config to reconfigure the bot")
+                
             old_msg = new_msg 
         sleep(1)

@@ -13,7 +13,7 @@ new_msg = ''
 load_dotenv('.env')
 
 #XMR Pool Variables Config
-wallet = os.getenv('WALLET')
+wallet = ''
 url = "https://web.xmrpool.eu:8119/stats_address"
 
 #Telegram Bot Config

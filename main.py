@@ -19,7 +19,6 @@ def get_data(wallet):
     response = requests.get(url,params)
     
     data = response.json()
-    print(data)
     return data
 
 token = os.getenv('BOT_TOKEN')
@@ -72,6 +71,7 @@ def send_keyboard_message(data,msg):
     requests.post(f"{config['url']}/sendMessage",send_data)
     config['lock'].release()
 
+print("Bot Started")
 while True:
 
     json_load=''
@@ -119,18 +119,16 @@ while True:
                                   f'⏱ Hash Rate: {mining_data["stats"]["hashrate"] if ("hashrate" in mining_data["stats"]) is True else "0 H"}/sec'
                                   )
             if new_msg == "🤖 Your Workers / Rigs":
-                send_message_only(data,"Coming Soon")
+                # send_message_only(data,"Coming Soon")
                 mining_data = get_data(wallet)
-                #for worker in mining_data["perWorkerStats"]:
-                    
-                    # send_message_only(data,
-                    #               f'🗝 Worker / Rig ID: *{worker["perWorkerStats"]["workerId"]}*\n'
-                    #               f'⏱ Hash Rate: {worker["perWorkerStats"]["hashrate"] if "hashrate" in mining_data["stats"] == True else "0 H"}/sec\n'
-                    #               f'📤 Accepted Hashes: {worker["perWorkerStats"]["hashes"] if "hashes" in mining_data["stats"] == True else "0"}\n'
-                    #               f'🕘 Last Share: {datetime.fromtimestamp(int(worker["perWorkerStats"]["lastShare"])).strftime("%H:%M") if "lastShare" in mining_data["stats"] == True else "Never"}\n'
-                                  
-                                  
-                    #               )
+                for worker in mining_data["perWorkerStats"]:
+                    send_message_only(data,
+                                  f'*PER WORKER STATS*\n'
+                                  f'🗝 Worker / Rig ID: *{worker["workerId"]}*\n'
+                                  f'⏱ Hash Rate: {worker["hashrate"] if ("hashrate" in worker) is True else "0 H"}/sec\n'
+                                  f'📤 Accepted Hashes: {worker["hashes"] if ("hashes" in worker) is True else "0"}\n'
+                                  f'🕘 Last Share: {datetime.fromtimestamp(int(worker["lastShare"])).strftime("%H:%M") if ("lastShare" in worker) is True else "Never"}\n'
+                                  )
                 
             old_msg = new_msg 
             # msg=f'{data["message"]["text"]} from: BOT'

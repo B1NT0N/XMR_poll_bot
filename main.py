@@ -5,6 +5,16 @@ from time import sleep
 from dotenv import load_dotenv
 import os
 import json
+import sqlalchemy
+
+#MySQL Variables Config
+USERNAME= os.getenv('BOT_TOKEN')
+DATABASE_USERNAME= os.getenv('BOT_TOKEN')
+PASSWORD= os.getenv('BOT_TOKEN')
+SERVER= os.getenv('BOT_TOKEN')
+PORT= os.getenv('BOT_TOKEN')
+
+engine = sqlalchemy.create_engine(f'mysql://{USERNAME}:{PASSWORD}@{SERVER}:{PORT}/{DATABASE_NAME}')
 
 #Telegram Variables Config
 msg = ''
@@ -13,6 +23,8 @@ new_msg = ''
 load_dotenv('.env')
 
 #XMR Pool Variables Config
+
+
 wallet = None
 url = "https://web.xmrpool.eu:8119/stats_address"
 
@@ -100,6 +112,7 @@ while True:
                 new_msg = data["message"]["text"]
             except Exception as exception:
                 send_keyboard_message(data, "Unsuported Data Type")
+            
             #/START COMMAND    
             if new_msg == "/start":
                 send_message_only(data, "Welcome")

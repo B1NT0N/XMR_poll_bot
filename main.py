@@ -5,14 +5,21 @@ from time import sleep
 from dotenv import load_dotenv
 import os
 import json
-import sqlalchemy
+import mysql
 
 #MySQL Variables Config
 USERNAME= os.getenv('BOT_TOKEN')
-DATABASE_USERNAME= os.getenv('BOT_TOKEN')
+DATABASE_NAME= os.getenv('BOT_TOKEN')
 PASSWORD= os.getenv('BOT_TOKEN')
 SERVER= os.getenv('BOT_TOKEN')
 PORT= os.getenv('BOT_TOKEN')
+
+mydb = mysql.connector.connect(
+    host=SERVER,
+    user=USERNAME,
+    password=PASSWORD,
+    database=USERNAME
+)
 
 engine = sqlalchemy.create_engine(f'mysql://{USERNAME}:{PASSWORD}@{SERVER}:{PORT}/{DATABASE_NAME}')
 
@@ -31,6 +38,16 @@ url = "https://web.xmrpool.eu:8119/stats_address"
 #Telegram Bot Config
 token = os.getenv('BOT_TOKEN')
 config={'url':f"https://api.telegram.org/bot{token}",'lock':Lock()}
+
+#Insert Into Table
+def insert_wallet(mydb,chat_id,wallet):
+    mycursor = mydb.cursor()
+
+    sql = f"INSERT INTO {DATABASE_NAME} (chat_id, wallet_address) VALUES (%i, %s)"
+    val = (chat_id, wallet)
+    mycursor.execute(sql, val)
+
+    mydb.commit()
 
 #Receive The Wallet and Return the Data
 def get_data(wallet):

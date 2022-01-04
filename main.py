@@ -5,32 +5,30 @@ from time import sleep
 from dotenv import load_dotenv
 import os
 import json
-import mysql
+import mysql.connector
+
+load_dotenv('.env')
 
 #MySQL Variables Config
-USERNAME= os.getenv('BOT_TOKEN')
-DATABASE_NAME= os.getenv('BOT_TOKEN')
-PASSWORD= os.getenv('BOT_TOKEN')
-SERVER= os.getenv('BOT_TOKEN')
-PORT= os.getenv('BOT_TOKEN')
+USERNAME= os.getenv('MSQL_USERNAME')
+DATABASE_NAME= os.getenv('MSQL_DATABASE_NAME')
+PASSWORD= os.getenv('MSQL_PASSWORD')
+SERVER= os.getenv('MSQL_SERVER')
+PORT= os.getenv('MSQL_PORT')
 
 mydb = mysql.connector.connect(
-    host=SERVER,
-    user=USERNAME,
-    password=PASSWORD,
-    database=USERNAME
+    host=f"{SERVER}",
+    user=f"{USERNAME}",
+    password=f"{PASSWORD}",
+    database=f"{USERNAME}"
 )
-
-engine = sqlalchemy.create_engine(f'mysql://{USERNAME}:{PASSWORD}@{SERVER}:{PORT}/{DATABASE_NAME}')
 
 #Telegram Variables Config
 msg = ''
 old_msg=""
 new_msg = ''
-load_dotenv('.env')
 
 #XMR Pool Variables Config
-
 
 wallet = None
 url = "https://web.xmrpool.eu:8119/stats_address"
@@ -39,11 +37,18 @@ url = "https://web.xmrpool.eu:8119/stats_address"
 token = os.getenv('BOT_TOKEN')
 config={'url':f"https://api.telegram.org/bot{token}",'lock':Lock()}
 
+#Search For Wallet
+def get_wallet(mydb,chat_id):
+    mycursor = mydb.cursor()
+    
+    mycursor.execute("SELECT * FROM customers")
+
+    myresult = mycursor.fetchall()
+
 #Insert Into Table
 def insert_wallet(mydb,chat_id,wallet):
     mycursor = mydb.cursor()
-
-    sql = f"INSERT INTO {DATABASE_NAME} (chat_id, wallet_address) VALUES (%i, %s)"
+    sql = f"INSERT INTO {DATABASE_NAME} (chat_id, wallet_address) VALUES (%s, %s)"
     val = (chat_id, wallet)
     mycursor.execute(sql, val)
 
@@ -147,6 +152,9 @@ while True:
             if new_msg == "/donate":
                 send_message_only(data,"XMR Wallet Address: `47hMEVicDHdTGwcyTiQair3ong6v1yQAUQKLCdbYt41sXnA3mCaDBfNjgWMF9GdF24XR1b97VBNgMZ64UxB5iTrUHAnAPKe`")
             
+            if new_msg == "0":
+                insert_wallet(mydb,data["message"]["chat"]["id"],1)
+            
             #/HELP COMMAND    
             if new_msg == "/help":
                 send_message_only(data,
@@ -160,6 +168,7 @@ while True:
             #Check if Configuration is Valid    
             if old_msg == "/config" and len(new_msg) == 95:
                 wallet = new_msg
+                insert_wallet(mydb,data["message"]["chat"]["id"],wallet)
                 send_keyboard_message(data,"✔ XMR Address Configurated Sucesfully")
             elif old_msg == "/config" and len(new_msg) != 95:  
                 send_message_only(data,"❌ Invalid Address")

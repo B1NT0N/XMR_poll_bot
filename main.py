@@ -41,9 +41,11 @@ config={'url':f"https://api.telegram.org/bot{token}",'lock':Lock()}
 def get_wallet(mydb,chat_id):
     mycursor = mydb.cursor()
     
-    mycursor.execute("SELECT * FROM customers")
-
-    myresult = mycursor.fetchall()
+    mycursor.execute(f"SELECT * FROM chat_wallet WHERE chat_id = {chat_id};")
+    
+    myresult = mycursor.fetchone()
+    
+    return myresult
 
 #Insert Into Table
 def insert_wallet(mydb,chat_id,wallet):
@@ -153,8 +155,8 @@ while True:
                 send_message_only(data,"XMR Wallet Address: `47hMEVicDHdTGwcyTiQair3ong6v1yQAUQKLCdbYt41sXnA3mCaDBfNjgWMF9GdF24XR1b97VBNgMZ64UxB5iTrUHAnAPKe`")
             
             if new_msg == "0":
-                insert_wallet(mydb,data["message"]["chat"]["id"],1)
-            
+                WLLT = get_wallet(mydb,data["message"]["chat"]["id"])
+                print(WLLT)
             #/HELP COMMAND    
             if new_msg == "/help":
                 send_message_only(data,

@@ -136,6 +136,11 @@ while True:
                 new_msg = data["message"]["text"]
             except Exception as exception:
                 send_keyboard_message(data, "Unsuported Data Type")
+                
+            if wallet is None:
+                table_data = get_wallet(mydb,data["message"]["chat"]["id"])
+                if table_data is not None:
+                    _,wallet = table_data
             
             #/START COMMAND    
             if new_msg == "/start":

@@ -41,7 +41,7 @@ config={'url':f"https://api.telegram.org/bot{token}",'lock':Lock()}
 def get_wallet(mydb,chat_id):
     mycursor = mydb.cursor()
     
-    mycursor.execute(f"SELECT * FROM chat_wallet WHERE chat_id = {chat_id};")
+    mycursor.execute(f"SELECT * FROM {DATABASE_NAME} WHERE chat_id = {chat_id};")
     
     myresult = mycursor.fetchone()
     
@@ -56,6 +56,12 @@ def insert_wallet(mydb,chat_id,wallet):
 
     mydb.commit()
 
+#Delete Wallet
+def delete_wallet(mydb,chat_id):
+    mycursor = mydb.cursor()
+    mycursor.execute(f"DELETE FROM chat_wallet WHERE chat_id = {chat_id};")
+    mydb.commit()
+    
 #Receive The Wallet and Return the Data
 def get_data(wallet):
     
@@ -136,7 +142,8 @@ while True:
                 new_msg = data["message"]["text"]
             except Exception as exception:
                 send_keyboard_message(data, "Unsuported Data Type")
-                
+            
+            #Check For Wallet    
             if wallet is None:
                 table_data = get_wallet(mydb,data["message"]["chat"]["id"])
                 if table_data is not None:
@@ -159,9 +166,11 @@ while True:
             if new_msg == "/donate":
                 send_message_only(data,"XMR Wallet Address: `47hMEVicDHdTGwcyTiQair3ong6v1yQAUQKLCdbYt41sXnA3mCaDBfNjgWMF9GdF24XR1b97VBNgMZ64UxB5iTrUHAnAPKe`")
             
-            if new_msg == "0":
-                WLLT = get_wallet(mydb,data["message"]["chat"]["id"])
-                print(WLLT)
+            #/DELETE COMMAND
+            if new_msg == "/delete":
+                delete_wallet(mydb,data["message"]["chat"]["id"])
+                send_message_only(data,"Wallet Configuration Sucesfully Removed")
+                
             #/HELP COMMAND    
             if new_msg == "/help":
                 send_message_only(data,
